@@ -31,7 +31,7 @@ export default function Contact() {
 
     // The URL of your backend API endpoint.
     // Make sure your backend server is running on this address.
-    const apiEndpoint = 'http://localhost:3001/api/send-email';
+    const apiEndpoint = 'https://quadrabyte1.onrender.com/api/send-email';
 
     try {
       const response = await fetch(apiEndpoint, {
