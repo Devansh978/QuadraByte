@@ -11,6 +11,11 @@ const port = process.env.PORT || 3001;
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // To parse JSON bodies
 
+app.get("/", (req, res) => {
+  res.send("✅ Backend is running successfully!");
+});
+
+
 // API endpoint to send email
 app.post('/api/send-email', (req, res) => {
   // Change 1: Destructure phone from the request body.
