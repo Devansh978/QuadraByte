@@ -1,67 +1,34 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Mail, Phone, Send, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import meeting from '../assets/meeting.png';
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    message: '',
-  });
-
+  const form = useRef();
   const [submissionStatus, setSubmissionStatus] = useState('idle'); // 'idle', 'sending', 'success', 'error'
   const [submissionMessage, setSubmissionMessage] = useState('');
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const sendEmail = (e) => {
     e.preventDefault();
     setSubmissionStatus('sending');
     setSubmissionMessage('');
 
-    // The URL of your backend API endpoint.
-    // Make sure your backend server is running on this address.
-    const apiEndpoint = 'https://quadrabyte1.onrender.com/api/send-email';
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    emailjs
+      .sendForm('service_19pe08y', 'template_uobhujn', form.current, {
+        publicKey: 'qaSQXnhbd5UMdF4ox',
+      })
+      .then(
+        () => {
+          setSubmissionStatus('success');
+          setSubmissionMessage('Thank you! Your message has been sent successfully. We will get back to you soon.');
+          form.current.reset();
         },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        // If the server response is not OK (e.g., status 400, 500), throw an error.
-        throw new Error(result.message || 'Failed to send message. Please try again.');
-      }
-
-      // Handle success
-      setSubmissionStatus('success');
-      setSubmissionMessage('Thank you! Your message has been sent successfully. we will get back to you soon.');
-      // Clear the form on successful submission
-      setFormData({ name: '', email: '', phone: '', company: '', message: '' });
-
-    } catch (error) {
-      // Handle errors (network errors or errors thrown from the server response)
-      setSubmissionStatus('error');
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-      setSubmissionMessage(`Sorry, something went wrong. ${errorMessage}`);
-      console.error('Submission error:', error);
-    }
+        (error) => {
+          setSubmissionStatus('error');
+          setSubmissionMessage(`Sorry, something went wrong. ${error.text || 'Please try again later.'}`);
+          console.error('Email send error:', error);
+        }
+      );
   };
 
   return (
@@ -79,17 +46,12 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-start">
           <div>
             <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100">
-              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              <form ref={form} onSubmit={sendEmail} className="space-y-5 sm:space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Your Name
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
                   <input
                     type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
+                    name="user_name"
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                     placeholder="yash nema"
@@ -97,15 +59,10 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email Address
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                   <input
                     type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    name="user_email"
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                     placeholder="yash@quadrabyte.com"
@@ -113,15 +70,10 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone Number
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
                   <input
                     type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
+                    name="user_phone"
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                     placeholder="+91 8305603771"
@@ -129,15 +81,10 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label htmlFor="company" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Company Name
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Company Name</label>
                   <input
                     type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
+                    name="user_company"
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                     placeholder="QuadraByte"
@@ -145,14 +92,9 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Project Details
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Project Details</label>
                   <textarea
-                    id="message"
                     name="message"
-                    value={formData.message}
-                    onChange={handleChange}
                     required
                     rows={5}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm sm:text-base"
@@ -179,14 +121,14 @@ export default function Contact() {
 
                 {submissionStatus === 'success' && (
                   <div className="flex items-start gap-2 text-green-600 p-3 bg-green-50 rounded-lg text-sm sm:text-base">
-                    <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5"/>
+                    <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <p>{submissionMessage}</p>
                   </div>
                 )}
 
                 {submissionStatus === 'error' && (
                   <div className="flex items-start gap-2 text-red-600 p-3 bg-red-50 rounded-lg text-sm sm:text-base">
-                    <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5"/>
+                    <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <p>{submissionMessage}</p>
                   </div>
                 )}
