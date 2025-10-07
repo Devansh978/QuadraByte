@@ -52,13 +52,13 @@ export default function Navbar(): JSX.Element {
             <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full overflow-hidden bg-white shadow-lg border-2 border-qb-gold flex-shrink-0">
               <img
                 src={logo}
-                alt="QuardByte Logo"
+                alt="QuadByte Logo"
                 className="w-full h-full object-cover transition-transform group-hover:scale-110"
               />
             </div>
             {/* Brand Name: Responsive text size */}
             <span className="text-xl sm:text-2xl md:text-3xl font-extrabold text-black tracking-tight">
-              QuardraByte
+              QuadraByte
             </span>
           </a>
 
