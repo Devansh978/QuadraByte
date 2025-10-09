@@ -14,8 +14,8 @@ export default function Contact() {
     setSubmissionMessage('');
 
     emailjs
-      .sendForm('service_19pe08y', 'template_uobhujn', form.current, {
-        publicKey: 'qaSQXnhbd5UMdF4ox',
+      .sendForm('service_9tr7lyd', 'template_scfp42j', form.current, {
+        publicKey: 'GBGTvJUrIquVPzL1I',
       })
       .then(
         () => {
