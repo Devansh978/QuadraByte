@@ -7,11 +7,128 @@ export default function Contact() {
   const form = useRef();
   const [submissionStatus, setSubmissionStatus] = useState('idle'); // 'idle', 'sending', 'success', 'error'
   const [submissionMessage, setSubmissionMessage] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [touchedFields, setTouchedFields] = useState({});
+
+  // Validation rules
+  const validationRules = {
+    user_name: {
+      required: true,
+      minLength: 2,
+      maxLength: 50,
+      pattern: /^[a-zA-Z\s]*$/,
+      message: 'Name should contain only letters and spaces (2-50 characters)'
+    },
+    user_email: {
+      required: true,
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Please enter a valid email address'
+    },
+    user_phone: {
+      required: true,
+      pattern: /^[\+]?[1-9][\d]{0,15}$/,
+      message: 'Please enter a valid phone number (digits only, optional + prefix)'
+    },
+    user_company: {
+      required: true,
+      minLength: 2,
+      maxLength: 60,
+      message: 'Company name should be 2-60 characters long'
+    },
+    message: {
+      required: true,
+      minLength: 10,
+      maxLength: 1000,
+      message: 'Message should be 10-1000 characters long'
+    }
+  };
+
+  // Validate a single field
+  const validateField = (name, value) => {
+    const rules = validationRules[name];
+    if (!rules) return '';
+
+    if (rules.required && !value.trim()) {
+      return 'This field is required';
+    }
+
+    if (rules.minLength && value.length < rules.minLength) {
+      return `Minimum ${rules.minLength} characters required`;
+    }
+
+    if (rules.maxLength && value.length > rules.maxLength) {
+      return `Maximum ${rules.maxLength} characters allowed`;
+    }
+
+    if (rules.pattern && !rules.pattern.test(value)) {
+      return rules.message;
+    }
+
+    return '';
+  };
+
+  // Validate entire form
+  const validateForm = (formData) => {
+    const errors = {};
+    let isValid = true;
+
+    Object.keys(validationRules).forEach(fieldName => {
+      const error = validateField(fieldName, formData.get(fieldName) || '');
+      if (error) {
+        errors[fieldName] = error;
+        isValid = false;
+      }
+    });
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  // Handle field blur
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouchedFields(prev => ({ ...prev, [name]: true }));
+    
+    const error = validateField(name, value);
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+
+  // Handle field change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Only validate if the field has been touched
+    if (touchedFields[name]) {
+      const error = validateField(name, value);
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
+    }
+  };
 
   const sendEmail = (e) => {
     e.preventDefault();
     setSubmissionStatus('sending');
     setSubmissionMessage('');
+
+    const formData = new FormData(e.target);
+    
+    // Mark all fields as touched when submitting
+    const allFields = Object.keys(validationRules);
+    const touched = {};
+    allFields.forEach(field => { touched[field] = true; });
+    setTouchedFields(touched);
+
+    // Validate form
+    if (!validateForm(formData)) {
+      setSubmissionStatus('error');
+      setSubmissionMessage('Please fix the validation errors before submitting.');
+      return;
+    }
 
     emailjs
       .sendForm('service_9tr7lyd', 'template_scfp42j', form.current, {
@@ -22,6 +139,8 @@ export default function Contact() {
           setSubmissionStatus('success');
           setSubmissionMessage('Thank you! Your message has been sent successfully. We will get back to you soon.');
           form.current.reset();
+          setFormErrors({});
+          setTouchedFields({});
         },
         (error) => {
           setSubmissionStatus('error');
@@ -30,6 +149,9 @@ export default function Contact() {
         }
       );
   };
+
+  // Check if form has errors
+  const hasErrors = Object.keys(formErrors).some(key => formErrors[key]);
 
   return (
     <section id="contact" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
@@ -46,16 +168,28 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-start">
           <div>
             <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-100">
-              <form ref={form} onSubmit={sendEmail} className="space-y-5 sm:space-y-6">
+              <form ref={form} onSubmit={sendEmail} className="space-y-5 sm:space-y-6" noValidate>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
                   <input
                     type="text"
                     name="user_name"
                     required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border focus:ring-2 focus:border-transparent transition-all text-sm sm:text-base ${
+                      formErrors.user_name 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     placeholder="yash nema"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                   />
+                  {formErrors.user_name && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3" />
+                      {formErrors.user_name}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -64,9 +198,21 @@ export default function Contact() {
                     type="email"
                     name="user_email"
                     required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border focus:ring-2 focus:border-transparent transition-all text-sm sm:text-base ${
+                      formErrors.user_email 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     placeholder="yash@quadrabyte.com"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                   />
+                  {formErrors.user_email && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3" />
+                      {formErrors.user_email}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -75,9 +221,21 @@ export default function Contact() {
                     type="tel"
                     name="user_phone"
                     required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border focus:ring-2 focus:border-transparent transition-all text-sm sm:text-base ${
+                      formErrors.user_phone 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     placeholder="+91 8305603771"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                   />
+                  {formErrors.user_phone && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3" />
+                      {formErrors.user_phone}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -86,9 +244,21 @@ export default function Contact() {
                     type="text"
                     name="user_company"
                     required
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border focus:ring-2 focus:border-transparent transition-all text-sm sm:text-base ${
+                      formErrors.user_company 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     placeholder="QuadraByte"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                   />
+                  {formErrors.user_company && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3" />
+                      {formErrors.user_company}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -97,14 +267,26 @@ export default function Contact() {
                     name="message"
                     required
                     rows={5}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm sm:text-base"
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border focus:ring-2 focus:border-transparent transition-all resize-none text-sm sm:text-base ${
+                      formErrors.message 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     placeholder="Tell us about your project..."
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                   />
+                  {formErrors.message && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <XCircle className="w-3 h-3" />
+                      {formErrors.message}
+                    </p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={submissionStatus === 'sending'}
+                  disabled={submissionStatus === 'sending' || hasErrors}
                   className="w-full bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-base sm:text-lg flex items-center justify-center gap-2 group disabled:bg-blue-400 disabled:cursor-not-allowed"
                 >
                   {submissionStatus === 'sending' ? (
@@ -126,7 +308,7 @@ export default function Contact() {
                   </div>
                 )}
 
-                {submissionStatus === 'error' && (
+                {submissionStatus === 'error' && !hasErrors && (
                   <div className="flex items-start gap-2 text-red-600 p-3 bg-red-50 rounded-lg text-sm sm:text-base">
                     <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                     <p>{submissionMessage}</p>
