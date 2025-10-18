@@ -16,7 +16,7 @@ export default function Footer() {
           <div className="col-span-1 sm:col-span-2 lg:col-span-2 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start space-x-2 mb-3 sm:mb-4">
               <span className="flex items-center justify-center text-coral font-extrabold text-2xl sm:text-3xl">
-                QD
+                QI
               </span>
               <span className="text-2xl sm:text-3xl font-bold">QuadInfy</span>
             </div>
