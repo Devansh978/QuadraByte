@@ -18,7 +18,7 @@ export default function Footer() {
               <span className="flex items-center justify-center text-coral font-extrabold text-2xl sm:text-3xl">
                 QD
               </span>
-              <span className="text-2xl sm:text-3xl font-bold">QuadraByte</span>
+              <span className="text-2xl sm:text-3xl font-bold">QuadInfy</span>
             </div>
             <p className="text-white/70 text-sm sm:text-base max-w-md mx-auto lg:mx-0 leading-relaxed mb-4 sm:mb-6 px-4 sm:px-0">
               <span className="text-coral font-semibold">More than just code:</span> We partner with you to engineer <span className="text-coral font-semibold">future-proof digital foundations.</span> We build fast, robust experiences designed for performance, scale, and long-term success.
@@ -63,7 +63,7 @@ export default function Footer() {
             <h4 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-coral">Connect</h4>
             <address className="space-y-2 sm:space-y-3 not-italic">
               <p className="text-sm sm:text-base text-white/70">
-                Email: <a href="mailto:quadrabyte04@gmail.com" className="hover:text-coral transition-colors break-all">quadrabyte04@gmail.com</a>
+                Email: <a href="mailto:quadinfy@gmail.com" className="hover:text-coral transition-colors break-all">quadinfy@gmail.com</a>
               </p>
               <p className="text-sm sm:text-base text-white/70">
                 Phone: <a href="tel:+918319518554" className="hover:text-coral transition-colors">(831) 951-8554</a>
@@ -84,7 +84,7 @@ export default function Footer() {
         {/* Bottom Section: Copyright and Legal Links */}
         <div className="pt-3 sm:pt-4 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
           <p className="text-white/60 text-xs sm:text-sm text-center md:text-left">
-            © {new Date().getFullYear()} QuadraByte. All rights reserved.
+            © {new Date().getFullYear()} QuadInfy. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm">
             <a href="/privacy-policy" className="text-white/60 hover:text-coral transition-colors">

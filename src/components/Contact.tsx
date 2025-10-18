@@ -203,7 +203,7 @@ export default function Contact() {
                         ? 'border-red-500 focus:ring-red-500' 
                         : 'border-gray-300 focus:ring-blue-500'
                     }`}
-                    placeholder="yash@quadrabyte.com"
+                    placeholder="yash@quadinfy.com"
                     onBlur={handleBlur}
                     onChange={handleChange}
                   />
@@ -249,7 +249,7 @@ export default function Contact() {
                         ? 'border-red-500 focus:ring-red-500' 
                         : 'border-gray-300 focus:ring-blue-500'
                     }`}
-                    placeholder="QuadraByte"
+                    placeholder="QuadInfy"
                     onBlur={handleBlur}
                     onChange={handleChange}
                   />
@@ -326,8 +326,8 @@ export default function Contact() {
                   <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 mt-1" />
                   <div>
                     <div className="font-semibold mb-1 text-sm sm:text-base">Email Us</div>
-                    <a href="mailto:quadrabyte04@gmail.com" className="text-white/80 hover:text-white text-sm sm:text-base break-all">
-                      quadrabyte04@gmail.com
+                    <a href="mailto:quadinfy@gmail.com" className="text-white/80 hover:text-white text-sm sm:text-base break-all">
+                      quadinfy@gmail.com
                     </a>
                   </div>
                 </div>

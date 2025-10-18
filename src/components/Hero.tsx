@@ -54,7 +54,7 @@ export default function Hero() {
                   </div>
                   <div className="bg-navy rounded-lg p-3 sm:p-4 font-mono text-xs sm:text-sm text-teal overflow-x-auto">
                     <div className="space-y-1.5 sm:space-y-2 min-w-max">
-                      <div><span className="text-purple-400">const</span> <span className="text-blue-400">website</span> = <span className="text-yellow-400">QuadraByte</span>.<span className="text-blue-400">build</span>()</div>
+                      <div><span className="text-purple-400">const</span> <span className="text-blue-400">website</span> = <span className="text-yellow-400">QuadInfy</span>.<span className="text-blue-400">build</span>()</div>
                       <div className="pl-4"><span className="text-gray-400">/</span><span className="text-gray-400">/</span> Modern, Fast, Scalable</div>
                       <div><span className="text-purple-400">return</span> <span className="text-green-400">success</span> ✓</div>
                     </div>
